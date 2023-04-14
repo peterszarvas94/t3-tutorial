@@ -56,7 +56,7 @@ const PostView = (props: PostWithUser) => {
           <div>·</div>
           <div>{dayjs(post.createdAt).fromNow()}</div>
         </div>
-        <span className={`${notoemoji.className} pt-2`}>{post.content}</span>
+        <span className={`${notoemoji.className} pt-2 text-2xl`}>{post.content}</span>
       </div>
     </div>
   );
