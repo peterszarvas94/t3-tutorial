@@ -8,6 +8,7 @@ import { Inter, Noto_Color_Emoji } from 'next/font/google'
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { LoadingPage } from "~/components/loading";
+import { useState } from "react";
 
 // fonts
 const notoemoji = Noto_Color_Emoji({
@@ -23,17 +24,44 @@ dayjs.extend(relativeTime);
 const CreatePostWizzard = () => {
   const { user } = useUser();
 
-  if (!user) return <div>User not found</div>;
+  const [input, setInput] = useState("");
+
+  const ctx = api.useContext();
+
+  const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
+    onSuccess: () => {
+      setInput("");
+      ctx.posts.getAll.invalidate();
+    }
+  });
+
+  if (!user) return null;
 
   return (
-    <div className="flex gap-3 w-full">
+    <form
+      className="flex w-full gap-3"
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.currentTarget.reset();
+        mutate({ content: input });
+      }}
+    >
       <Image
         src={user.profileImageUrl}
         alt="Pofile image"
         className="w-14 h-14 rounded-full" width="56" height="56"
       />
-      <input placeholder="Type some emojis" className="bg-transparent grow outline-none" />
-    </div>
+
+      <input
+        placeholder="Type some emojis"
+        className="bg-transparent grow outline-none"
+        type="text"
+        name="content"
+        onChange={(e) => setInput(e.target.value)}
+        disabled={isPosting}
+      />
+      <button type="submit">Post</button>
+    </form>
   )
 };
 
