@@ -49,6 +49,7 @@ export const postsRouter = createTRPCRouter({
         author: {
           ...author,
           username: author.username,
+          profileImageUrl: author.profileImageUrl,
         }
       }
     });
