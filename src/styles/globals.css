@@ -5,3 +5,7 @@
 body {
   @apply bg-black text-slate-100;
 }
+
+/* * { */
+/*   @apply outline outline-[1px] outline-lime-300; */
+/* } */

@@ -8,8 +8,9 @@ import { Inter, Noto_Color_Emoji } from 'next/font/google'
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { LoadingPage, LoadingSpinner } from "~/components/loading";
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-hot-toast";
+import Link from "next/link";
 
 // fonts
 const notoemoji = Noto_Color_Emoji({
@@ -90,18 +91,28 @@ const PostView = (props: PostWithUser) => {
   const { post, author } = props;
   return (
     <div key={post.id} className="p-4 border-b border-slate-400 flex gap-3">
+
       <Image
         src={author.profileImageUrl}
         alt="Pofile image"
-        className="w-14 h-14 rounded-full" width="56" height="56"
+        width="56"
+        height="56"
+        className="rounded-full h-14 w-14"
       />
-      <div className="flex flex-col text-slate-300 font-thin">
+
+      <div className="flex flex-col text-slate-300 font-thin w-full">
         <div className="flex gap-1">
-          <div className="font-normal">{`@${author.username}`}</div>
+          <Link href={`/@${author.username}`}>
+            <div className="font-normal">{`@${author.username}`}</div>
+          </Link>
           <div>·</div>
-          <div>{dayjs(post.createdAt).fromNow()}</div>
+          <Link href={`/post/${post.id}`} className="grow">
+            <div>{dayjs(post.createdAt).fromNow()}</div>
+          </Link>
         </div>
-        <span className={`${notoemoji.className} pt-2 text-2xl`}>{post.content}</span>
+        <Link href={`/post/${post.id}`}>
+          <span className={`${notoemoji.className} pt-2 text-2xl`}>{post.content}</span>
+        </Link>
       </div>
     </div>
   );
