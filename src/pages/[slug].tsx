@@ -32,7 +32,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   return (
     <>
       <Head>
-        <title>{`@${data.username}`}</title>
+        <title>{`@${data.username || username}`}</title>
       </Head>
       <main className={`${inter.className} flex justify-center min-h-screen`}>
         profile
