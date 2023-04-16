@@ -1,7 +1,6 @@
 import { SignInButton, useUser } from "@clerk/nextjs";
 import type { NextPage } from "next";
 import Image from "next/image";
-import Head from "next/head";
 import { api } from "~/utils/api";
 import type { RouterOutputs } from "~/utils/api";
 import { Inter, Noto_Color_Emoji } from 'next/font/google'
