@@ -1,5 +1,5 @@
 import { clerkClient } from "@clerk/nextjs/server";
-import { Post } from "@prisma/client";
+import type { Post } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
@@ -48,6 +48,29 @@ const ratelimit = new Ratelimit({
 });
 
 export const postsRouter = createTRPCRouter({
+
+  getById: publicProcedure
+    .input(z.object({ id: z.string(), }))
+    .query(async ({ ctx, input }) => {
+      const post = await ctx.prisma.post
+        .findUnique({ where: { id: input.id, }, })
+
+      if (!post) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Post not found',
+        });
+      }
+
+      const fullPosts = await addUserDataToPosts([post]);
+      if (!fullPosts[0]) throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Post not found',
+      });
+
+      return fullPosts[0];
+    }),
+
   getAll: publicProcedure.query(async ({ ctx }) => {
     const posts = await ctx.prisma.post.findMany({
       take: 100,
