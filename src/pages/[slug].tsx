@@ -1,18 +1,32 @@
 import type { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import Head from "next/head";
-import { Inter, /* Noto_Color_Emoji */ } from 'next/font/google'
 import { api } from "~/utils/api";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
 import SuperJSON from "superjson";
+import { Layout } from "~/components/layout";
+import Image from "next/image";
+import { LoadingPage } from "~/components/loading";
+import { PostView } from "~/components/PostView";
 
-// fonts
-// const notoemoji = Noto_Color_Emoji({
-//   subsets: ['emoji'],
-//   weight: ['400'],
-// });
-const inter = Inter({ subsets: ['latin'] });
+const ProfileFeed = (props: { userId: string }) => {
+  const { data, isLoading } = api.posts.getPostsByUserId.useQuery({
+    userId: props.userId,
+  });
+
+  if (isLoading) return <LoadingPage />;
+
+  if (!data || data.length === 0) return <div>User has not posted</div>;
+
+  return (
+    <div className="flex flex-col">
+      {data.map((fullPost) => (
+        <PostView {...fullPost} key={fullPost.post.id} />
+      ))}
+    </div>
+  );
+};
 
 // Home
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
@@ -32,11 +46,24 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   return (
     <>
       <Head>
-        <title>{`@${data.username || username}`}</title>
+        <title>{`@${data.username ?? username}`}</title>
       </Head>
-      <main className={`${inter.className} flex justify-center min-h-screen`}>
-        profile
-      </main>
+      <Layout>
+        <div className="relative h-36 bg-slate-600">
+          <Image
+            src={data.profileImageUrl}
+            alt={`${data.username ?? username}'s profile pic`}
+            width={128}
+            height={128}
+            className="absolute bottom-0 left-0 -mb-[64px] ml-4 rounded-full border-4 border-black bg-black"
+          />
+        </div>
+        <div className="h-[64px]"></div>
+        <div className="p-4 text-2xl font-bold">{`@${data.username ?? username}`}</div>
+        <div className="w-full border-b border-slate-400" />
+
+        <ProfileFeed userId={data.id} />
+      </Layout>
     </>
   );
 };
